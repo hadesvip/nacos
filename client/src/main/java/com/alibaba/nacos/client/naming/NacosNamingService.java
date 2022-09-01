@@ -211,10 +211,13 @@ public class NacosNamingService implements NamingService {
     public void registerInstance(String serviceName, String groupName, Instance instance) throws NacosException {
         NamingUtils.checkInstanceIsLegal(instance);
         String groupedServiceName = NamingUtils.getGroupedName(serviceName, groupName);
+        //是否是临时服务，默认为临时服务,即默认发送心跳信息到Nacos Server
         if (instance.isEphemeral()) {
             BeatInfo beatInfo = beatReactor.buildBeatInfo(groupedServiceName, instance);
+            //创建心跳线程，向Nacos Server发送心跳信息
             beatReactor.addBeatInfo(groupedServiceName, beatInfo);
         }
+        //向Nacos Server注册服务
         serverProxy.registerService(groupedServiceName, groupName, instance);
     }
     
